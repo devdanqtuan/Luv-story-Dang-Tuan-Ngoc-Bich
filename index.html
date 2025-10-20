@@ -17,9 +17,9 @@
 </head>
     <body>
         <!--chỗ này để phát nhạc -->
-		<audio autoplay="autopaly">
-			<source src="./iloveu.mp3" audio="" mp3"="">
-		</audio>
+		<audio id="bgm" autoplay muted loop playsinline preload="auto">
+			<source src="./iloveu.mp3" type="audio/mpeg">
+		</audio> 
 
         <div id="main">
             <!-- Gui loi nhan toi Vu Ngoc Bich -->
@@ -52,6 +52,23 @@
         </div>
     
     <script>
+		document.addEventListener('DOMContentLoaded', function() {
+			var audio = document.getElementById('bgm');
+			if (!audio) return;
+			// Thử phát ngay (nếu bị chặn, promise sẽ reject và bị bỏ qua)
+			audio.play().catch(function(){});
+			// Bỏ mute và phát khi có tương tác đầu tiên
+			var unlock = function() {
+				audio.muted = false;
+				audio.play().catch(function(){});
+				window.removeEventListener('click', unlock);
+				window.removeEventListener('touchstart', unlock);
+				window.removeEventListener('keydown', unlock);
+			};
+			window.addEventListener('click', unlock, { once: true });
+			window.addEventListener('touchstart', unlock, { once: true });
+			window.addEventListener('keydown', unlock, { once: true });
+		});
     </script>
 
     <script>
@@ -115,6 +132,8 @@
             x = e.pageX - offset.left;
             y = e.pageY - offset.top;
             if (seed.hover(x, y)) {
+				var bgm = document.getElementById('bgm');
+				if (bgm) { bgm.muted = false; bgm.play().catch(function(){}); }
                 hold = 0; 
                 canvas.unbind("click");
                 canvas.unbind("mousemove");
